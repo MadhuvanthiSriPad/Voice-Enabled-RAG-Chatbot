@@ -1,4 +1,4 @@
-"""ASR Service using FastAPI with AI4Bharat/Whisper models."""
+"""ASR Service using FastAPI with AI4Bharat IndicWav2Vec model."""
 
 import base64
 import io
@@ -50,39 +50,19 @@ class ASRService:
                 return code
         return "en"
 
-    @property
-    def is_whisper(self) -> bool:
-        return "whisper" in self.model_name.lower()
-
     def load(self) -> None:
         logger.info(f"Loading: {self.model_name}")
-        try:
-            if self.is_whisper:
-                from transformers import WhisperForConditionalGeneration, WhisperProcessor
-                self.processor = WhisperProcessor.from_pretrained(self.model_name)
-                self.model = WhisperForConditionalGeneration.from_pretrained(self.model_name)
-            else:
-                from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
-                self.processor = Wav2Vec2Processor.from_pretrained(self.model_name)
-                self.model = Wav2Vec2ForCTC.from_pretrained(self.model_name)
-            self.model.to(self.device).eval()
-            logger.info("Model loaded")
-        except Exception as e:
-            logger.warning(f"Failed: {e}, using whisper-small")
-            self.model_name = "openai/whisper-small"
-            self.load()
+        from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+        self.processor = Wav2Vec2Processor.from_pretrained(self.model_name)
+        self.model = Wav2Vec2ForCTC.from_pretrained(self.model_name)
+        self.model.to(self.device).eval()
+        logger.info("Model loaded")
 
     def transcribe(self, audio: np.ndarray) -> str:
-        if self.is_whisper:
-            inputs = self.processor(audio, sampling_rate=SAMPLE_RATE, return_tensors="pt")
-            with torch.no_grad():
-                ids = self.model.generate(inputs.input_features.to(self.device))
-            return self.processor.batch_decode(ids, skip_special_tokens=True)[0]
-        else:
-            inputs = self.processor(audio, sampling_rate=SAMPLE_RATE, return_tensors="pt", padding=True)
-            with torch.no_grad():
-                logits = self.model(inputs.input_values.to(self.device)).logits
-            return self.processor.batch_decode(torch.argmax(logits, dim=-1))[0]
+        inputs = self.processor(audio, sampling_rate=SAMPLE_RATE, return_tensors="pt", padding=True)
+        with torch.no_grad():
+            logits = self.model(inputs.input_values.to(self.device)).logits
+        return self.processor.batch_decode(torch.argmax(logits, dim=-1))[0]
 
 
 def load_audio(data: bytes) -> np.ndarray:
