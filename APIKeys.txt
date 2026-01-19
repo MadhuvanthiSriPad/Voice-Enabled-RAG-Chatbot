@@ -1,0 +1,3 @@
+export SARVAM_API_KEY="sk_nx1720s4_V3VB1nxQsoIgfptkrMzCkDEQ"
+export LLM_API_KEY="q7BxahbXvr5c7346HJGqGp5qAIYTFjeqa1zGufhP"
+export LLM_PROVIDER="cohere"
