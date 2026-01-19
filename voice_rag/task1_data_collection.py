@@ -22,65 +22,6 @@ class SearchProvider(Protocol):
     def search(self, query: str) -> Optional[Tuple[str, str]]: ...
 
 
-def find_wikipedia_link(results: list, link_key: str, title_key: str, source: str) -> Optional[Tuple[str, str]]:
-    for result in results:
-        link = result.get(link_key, '')
-        if 'wikipedia.org/wiki/' in link:
-            title = result.get(title_key, '').replace(' - Wikipedia', '')
-            logger.info(f"Found via {source}: {title}")
-            return title, link
-    return None
-
-
-class SerpAPISearch:
-    def __init__(self, api_key: str, session: requests.Session):
-        self.api_key = api_key
-        self.session = session
-
-    def search(self, query: str) -> Optional[Tuple[str, str]]:
-        try:
-            params = {"q": f"{query} wikipedia", "api_key": self.api_key, "engine": "google", "num": 5}
-            response = self.session.get("https://serpapi.com/search", params=params, timeout=15)
-            response.raise_for_status()
-            return find_wikipedia_link(response.json().get('organic_results', []), 'link', 'title', 'SerpAPI')
-        except Exception as e:
-            logger.error(f"SerpAPI failed: {e}")
-            return None
-
-
-class GoogleSearch:
-    def __init__(self, api_key: str, session: requests.Session):
-        self.api_key, self.cx_id = api_key.split(':') if ':' in api_key else (api_key, '')
-        self.session = session
-
-    def search(self, query: str) -> Optional[Tuple[str, str]]:
-        try:
-            params = {"key": self.api_key, "cx": self.cx_id, "q": f"{query} wikipedia", "num": 5}
-            response = self.session.get("https://www.googleapis.com/customsearch/v1", params=params, timeout=10)
-            response.raise_for_status()
-            return find_wikipedia_link(response.json().get('items', []), 'link', 'title', 'Google')
-        except Exception as e:
-            logger.error(f"Google API failed: {e}")
-            return None
-
-
-class BingSearch:
-    def __init__(self, api_key: str, session: requests.Session):
-        self.api_key = api_key
-        self.session = session
-
-    def search(self, query: str) -> Optional[Tuple[str, str]]:
-        try:
-            headers = {"Ocp-Apim-Subscription-Key": self.api_key}
-            params = {"q": f"{query} wikipedia", "count": 5}
-            response = self.session.get("https://api.bing.microsoft.com/v7.0/search", headers=headers, params=params, timeout=10)
-            response.raise_for_status()
-            return find_wikipedia_link(response.json().get('webPages', {}).get('value', []), 'url', 'name', 'Bing')
-        except Exception as e:
-            logger.error(f"Bing API failed: {e}")
-            return None
-
-
 class WikipediaAPISearch:
     def __init__(self, session: requests.Session):
         self.session = session
@@ -130,19 +71,6 @@ class WikipediaAPISearch:
         except Exception as e:
             logger.error(f"Fuzzy search failed: {e}")
         return None
-
-
-class SearchWithFallback:
-    def __init__(self, primary: SearchProvider, fallback: SearchProvider):
-        self.primary = primary
-        self.fallback = fallback
-
-    def search(self, query: str) -> Optional[Tuple[str, str]]:
-        result = self.primary.search(query)
-        if result:
-            return result
-        logger.info("Primary search failed, trying Wikipedia fallback...")
-        return self.fallback.search(query)
 
 
 class WikipediaScraper:
@@ -242,18 +170,6 @@ def write_file(content: str, filepath: str) -> bool:
         return False
 
 
-def create_search_provider(provider_name: str, api_key: str, session: requests.Session) -> SearchProvider:
-    wiki_search = WikipediaAPISearch(session)
-    providers = {
-        "serpapi": lambda: SerpAPISearch(api_key, session),
-        "google": lambda: GoogleSearch(api_key, session),
-        "bing": lambda: BingSearch(api_key, session),
-    }
-    if provider_name in providers and api_key:
-        return SearchWithFallback(providers[provider_name](), wiki_search)
-    return wiki_search
-
-
 def collect(topic: str, output_path: str, search_provider: SearchProvider, scraper: WikipediaScraper) -> bool:
     print(f"\n[1] Searching for: '{topic}'")
     result = search_provider.search(topic)
@@ -285,8 +201,6 @@ def main():
     parser = argparse.ArgumentParser(prog='task1_data_collection')
     parser.add_argument('--topic', '-t', type=str, help='Search topic')
     parser.add_argument('--output', '-o', type=str, default=os.path.join(config.OUTPUT_DIR, config.SCRAPED_TEXT_FILE))
-    parser.add_argument('--search-api', '-s', type=str, default='serpapi', choices=['serpapi', 'google', 'bing'])
-    parser.add_argument('--api-key', type=str, default=None)
     args = parser.parse_args()
 
     if not args.topic:
@@ -298,8 +212,7 @@ def main():
     session = requests.Session()
     session.headers.update({"User-Agent": "VoiceRAGChatbot/1.0 (Educational Project)"})
 
-    api_key = args.api_key or os.environ.get('SERPAPI_KEY') or os.environ.get('SEARCH_API_KEY')
-    search_provider = create_search_provider(args.search_api, api_key, session)
+    search_provider = WikipediaAPISearch(session)
     scraper = WikipediaScraper(session)
 
     return 0 if collect(args.topic, args.output, search_provider, scraper) else 1
