@@ -14,12 +14,14 @@ embedder = SentenceTransformerEmbedder()
 vector_store = ChromaVectorStore()
 
 
-def transcribe_audio(audio_path: str) -> str:
+def transcribe_audio(audio_path: str, language: str = None) -> str:
     """Step 1: Call ASR service (task3) endpoint."""
     with open(audio_path, 'rb') as f:
+        params = {'language': language} if language else {}
         response = requests.post(
             f"http://{config.ASR_HOST}:{config.ASR_PORT}/transcribe",
             files={'file': f},
+            params=params,
             timeout=60
         )
     response.raise_for_status()
@@ -64,7 +66,7 @@ Answer:"""
 
 def process_audio_query(audio_path: str, source_language: str = "hi-IN") -> dict:
     """Full pipeline: Audio -> ASR (task3) -> Translation (task4) -> Retrieval (task2) -> LLM -> Answer"""
-    transcribed = transcribe_audio(audio_path)
+    transcribed = transcribe_audio(audio_path, language=source_language)
     print(f"Transcribed: {transcribed}")
 
     translated = translate_to_english(transcribed, source_language)

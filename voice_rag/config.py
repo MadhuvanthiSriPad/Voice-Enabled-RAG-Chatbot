@@ -17,11 +17,13 @@ class Config:
 
     # Models
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
-    ASR_MODEL_NAME: str = "ai4bharat/indicwav2vec_v1_hindi"
 
     # ASR Service
     ASR_HOST: str = "localhost"
     ASR_PORT: int = 8000
+
+    # Supported Languages
+    SUPPORTED_LANGUAGES: list = ("hi-IN", "ta-IN")  # Hindi, Tamil
 
     # Output
     OUTPUT_DIR: str = "./output"

@@ -7,8 +7,8 @@ API_URL = "https://api.sarvam.ai/translate"
 API_KEY = os.getenv("SARVAM_API_KEY", "")
 
 SUPPORTED_LANGUAGES = [
-    "hi-IN", "bn-IN", "kn-IN", "ml-IN", "mr-IN",
-    "od-IN", "pa-IN", "ta-IN", "te-IN", "gu-IN"
+    "hi-IN",  # Hindi
+    "ta-IN"   # Tamil
 ]
 
 
