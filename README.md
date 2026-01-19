@@ -81,13 +81,13 @@ During testing, Cohere rate limits were hit. Basic retry logic with backoff was 
 ## Project Structure
 
 ```
-├── app.py                    # Gradio UI (bonus task)
+├── app.py                    # Gradio UI 
 ├── config.py                 # Configuration settings
-├── task1_data_collection.py  # Wikipedia scraping (Task 1)
-├── task2_vector_database.py  # Vector DB with ChromaDB (Task 2)
-├── task3_asr_service.py      # FastAPI ASR service (Task 3)
-├── task4_translation.py      # Sarvam translation API (Task 4)
-├── task5_rag_pipeline.py     # End-to-end RAG pipeline (Task 5)
+├── task1_data_collection.py  # Wikipedia scraping 
+├── task2_vector_database.py  # Vector DB with ChromaDB 
+├── task3_asr_service.py      # FastAPI ASR service
+├── task4_translation.py      # Sarvam translation API 
+├── task5_rag_pipeline.py     # End-to-end RAG pipeline 
 ├── requirements.txt          # Python dependencies
 ├── output/                   # Scraped Wikipedia articles
 └── chroma_db/                # Vector database storage
