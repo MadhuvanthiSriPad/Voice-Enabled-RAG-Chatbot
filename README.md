@@ -48,25 +48,17 @@ Then open the URL shown in Terminal 2 (usually `http://localhost:7860`).
 3. Either type your question or record voice input
 4. Get your answer!
 
-## Observations and Challenges
+## Challenges & Implementation Decisions
 
-### Things That Worked Well
+### 1. Chunking Strategy
+Choosing the right chunk size for Wikipedia articles was non-trivial. Very small chunks lose context, while large chunks reduce retrieval precision. The final approach uses ~4500 characters (≈500 tokens) per chunk, split by section boundaries. No overlap is used, as section-based chunking already preserves semantic coherence.
 
-- **ChromaDB was a good choice** - I initially thought about using Pinecone or FAISS, but ChromaDB just works out of the box. No servers, no Docker, no hassle. For a demo project like this, it's perfect.
+### 2. Scraping Robustness
+Initial scraping and chunking would fail if the exact query term was not found on the page. A spell-check and query-normalization fallback was added to handle minor spelling variations and ambiguous inputs, improving overall robustness.
 
-- **Sentence-transformers embeddings** - The `all-MiniLM-L6-v2` model is surprisingly good for its size. Retrieval quality was better than I expected.
+### 3. Rate Limiting
+During testing, Cohere rate limits were hit. Basic retry logic with backoff was added to stabilize embedding generation.
 
-### Challenges I Faced
-
-1. **Voice input was tricky** - Getting Whisper to work reliably with Indian language accents took some trial and error. I had to add a fallback mechanism because sometimes the ASR service would timeout or return garbled text.
-
-2. **Translation accuracy** - The Sarvam API works well for most inputs, but sometimes technical terms or code-mixed speech (Hindi + English) doesn't translate cleanly. This affects the final answer quality.
-
-3. **Chunking strategy** - Figuring out the right chunk size for Wikipedia articles was harder than expected. Too small and you lose context, too large and retrieval becomes less precise. I settled on ~4500 characters (~500 tokens) chunked by section boundaries. No overlap is used since section-based chunking naturally preserves semantic coherence.
-
-4. **Gradio audio component quirks** - The audio recording component behaves differently across browsers. Chrome works best, Firefox had some issues with the recording stopping early.
-
-5. **Rate limits** - During testing, I hit Cohere's rate limits a few times. Had to add some basic retry logic.
 
 ### What I'd Do Differently
 
