@@ -59,8 +59,6 @@ Choosing the right chunk size for Wikipedia articles was non-trivial. Very small
 ### 2. Scraping Robustness
 Initial scraping and chunking would fail if the exact query term was not found on the page. A spell-check and query-normalization fallback was added to handle minor spelling variations and ambiguous inputs, improving overall robustness.
 
-### 3. Rate Limiting
-During testing, Cohere rate limits were hit. Basic retry logic with backoff was added to stabilize embedding generation.
 
 
 ### What I'd Do Differently
