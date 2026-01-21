@@ -20,10 +20,17 @@ sentence-transformers>=2.2.0
 # Audio Processing
 librosa>=0.10.0
 soundfile>=0.12.0
+torchaudio>=2.0.0
 
 # Machine Learning
 torch>=2.0.0
 transformers>=4.30.0
+
+# IndicConformer ASR Dependencies
+# Note: AI4Bharat NeMo must be installed separately
+# Run: git clone https://github.com/AI4Bharat/NeMo.git && cd NeMo && git checkout nemo-v2 && bash reinstall.sh
+onnx>=1.14.0
+onnxruntime>=1.15.0
 
 # UI (Bonus Task)
 gradio>=4.0.0

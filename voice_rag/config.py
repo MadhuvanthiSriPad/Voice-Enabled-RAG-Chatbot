@@ -22,8 +22,12 @@ class Config:
     ASR_HOST: str = "localhost"
     ASR_PORT: int = 8000
 
-    # Supported Languages
-    SUPPORTED_LANGUAGES: list = ("hi-IN", "ta-IN")  # Hindi, Tamil
+    # Supported Languages (22 Indian languages)
+    SUPPORTED_LANGUAGES: list = (
+        "as-IN", "bn-IN", "brx-IN", "doi-IN", "gu-IN", "hi-IN", "kn-IN", "kok-IN",
+        "ks-IN", "mai-IN", "ml-IN", "mni-IN", "mr-IN", "ne-IN", "or-IN", "pa-IN",
+        "sa-IN", "sat-IN", "sd-IN", "ta-IN", "te-IN", "ur-IN"
+    )
 
     # Output
     OUTPUT_DIR: str = "./output"

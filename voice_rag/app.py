@@ -82,7 +82,7 @@ def clear():
 
 with gr.Blocks(title="Voice RAG Chatbot", theme=gr.themes.Soft()) as demo:
     gr.Markdown("## Voice-Enabled RAG Chatbot")
-    gr.Markdown("*Ask questions about Wikipedia articles using text or voice (Hindi, Tamil)*")
+    gr.Markdown("*Ask questions about Wikipedia articles using text or voice in 22 Indian languages*")
 
     with gr.Row():
         with gr.Column(scale=2):
@@ -101,8 +101,28 @@ with gr.Blocks(title="Voice RAG Chatbot", theme=gr.themes.Soft()) as demo:
             audio_input = gr.Audio(label="Voice Input", type="filepath")
             language = gr.Dropdown(
                 choices=[
+                    ("Assamese", "as-IN"),
+                    ("Bengali", "bn-IN"),
+                    ("Bodo", "brx-IN"),
+                    ("Dogri", "doi-IN"),
+                    ("Gujarati", "gu-IN"),
                     ("Hindi", "hi-IN"),
-                    ("Tamil", "ta-IN")
+                    ("Kannada", "kn-IN"),
+                    ("Konkani", "kok-IN"),
+                    ("Kashmiri", "ks-IN"),
+                    ("Maithili", "mai-IN"),
+                    ("Malayalam", "ml-IN"),
+                    ("Manipuri", "mni-IN"),
+                    ("Marathi", "mr-IN"),
+                    ("Nepali", "ne-IN"),
+                    ("Odia", "or-IN"),
+                    ("Punjabi", "pa-IN"),
+                    ("Sanskrit", "sa-IN"),
+                    ("Santali", "sat-IN"),
+                    ("Sindhi", "sd-IN"),
+                    ("Tamil", "ta-IN"),
+                    ("Telugu", "te-IN"),
+                    ("Urdu", "ur-IN")
                 ],
                 value="hi-IN",
                 label="Language"
