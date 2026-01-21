@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Model configuration
 MODEL_NAME = "ai4bharat/indic-conformer-600m-multilingual"
 TARGET_SAMPLE_RATE = 16000
-DECODER_TYPE = "rnnt"  # Use RNNT for better quality (can also use "ctc")
+DECODER_TYPE = "rnnt"  
 
 # Validation constants
 MAX_FILE_SIZE_MB = 100
@@ -315,10 +315,6 @@ async def transcribe_b64(
 ):
     """
     Transcribe base64 encoded audio using IndicConformer model.
-
-    Request body:
-    - audio_base64: Base64 encoded audio file
-    - language_code: ISO 639-1 language code (e.g., 'hi', 'ta', 'hi-IN') - REQUIRED
     """
     # Validate language
     validate_language(req.language_code)
@@ -375,19 +371,4 @@ async def list_languages():
 
 if __name__ == "__main__":
     import uvicorn
-    print(f"\n{'='*60}")
-    print(f"ASR Service - AI4Bharat IndicConformer")
-    print(f"{'='*60}")
-    print(f"API Documentation: http://{config.ASR_HOST}:{config.ASR_PORT}/docs")
-    print(f"Health Check: http://{config.ASR_HOST}:{config.ASR_PORT}/health")
-    print(f"Model: {MODEL_NAME}")
-    print(f"Decoder: {DECODER_TYPE}")
-    print(f"Supported Languages: {', '.join(SUPPORTED_LANGUAGES)}")
-    print(f"{'='*60}\n")
-
-    uvicorn.run(
-        "task3_asr_service:app",
-        host=config.ASR_HOST,
-        port=config.ASR_PORT,
-        reload=True
-    )
+    uvicorn.run("task3_asr_service:app", host=config.ASR_HOST, port=config.ASR_PORT)
